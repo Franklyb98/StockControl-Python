@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 def salvar_estoque(estoque):
     with open("estoque.json", "w") as arquivo:
@@ -16,7 +17,34 @@ def verificar_estoque(quantidade):
         return "⚠️ IMPRIMIR FOLHAS"
     return ""
 
+def carregar_historico():
+    try:
+        with open("historico.json", "r") as arquivo:
+            return json.load(arquivo)
+    except FileNotFoundError:
+        return []
+
+def salvar_historico(historico):
+    with open("historico.json", "w") as arquivo:
+        json.dump(historico, arquivo, indent=4)
+
+def registrar_movimentacao(nome, tipo, quantidade):
+    historico = carregar_historico()
+    data = datetime.now().strftime("%d/%m/%Y %H:%M")
+    movimentacao = {
+        "pizzaria": nome,
+        "tipo": tipo,
+        "quantidade": quantidade,
+        "data": data
+    }
+
+    historico.append(movimentacao)
+    salvar_historico(historico)
+
+
 estoque = carregar_estoque()
+historico = carregar_historico()
+
 
 while True:
     print("\n ======== ESTOQUE DE FOLHAS ========")
@@ -26,17 +54,22 @@ while True:
     print("4 - Remover Folhas")
     print("5 - Remover Pizzaria")
     print("6 - Listar Todas")
-    print("7 - Sair")
+    print("7 - Relatórios")
+    print("8 - Sair")
 
     opcao = input("Escolha uma opção: ")
 
     if opcao == "1":
         nome =  input("Nome da Pizzaria: ").title()
-        quantidade = int(input("Quantidade de Folhas: "))
-        estoque[nome] = quantidade
-        salvar_estoque(estoque)
-        print("Pizzaria Cadastrada!")
-    
+
+        if nome in estoque:
+            print("⚠️ Essa pizzaria já está cadastrada!")
+        else:
+               quantidade = int(input("Quantidade de Folhas: "))
+               estoque[nome] = quantidade
+               salvar_estoque(estoque)
+               print("Pizzaria cadastrada com sucesso!")
+
     elif opcao == "2":
 
         busca = input("Digite o nome da pizzaria: ").lower()
@@ -52,18 +85,16 @@ while True:
         if not encontrou:
             print("Nenhuma pizzaria encontrada.")
 
-        
-
     elif opcao == "3":
         nome = input("Nome da pizzaria: ").title()
         if nome in estoque:
             adicionar = int(input("Quantas folhas deseja adicionar? "))
             estoque[nome] += adicionar
             salvar_estoque(estoque)
-            aviso =  verificar_estoque(quantidade)
-            print(f"{nome} agora possui {quantidade} folhas {aviso}")
-
-        
+            registrar_movimentacao(nome, "Entrada", adicionar)
+            aviso =  verificar_estoque(estoque[nome])
+            print(f"{nome} agora possui {estoque[nome]} folhas {aviso}")
+      
     elif opcao == "4":
         nome = input("Nome da pizzaria: ").title()
         if nome in estoque:
@@ -71,12 +102,12 @@ while True:
             if retirar <= estoque[nome]:
                 estoque[nome] -= retirar
                 salvar_estoque(estoque)
-                aviso =  verificar_estoque(quantidade)
+                registrar_movimentacao(nome, "Saída", retirar)
+                aviso =  verificar_estoque(estoque[nome])
                 print(f"Retiradas {retirar} folhas. Estoque atual: {estoque[nome]} folhas {aviso}")
             else:
                 print("Não há folhas suficientes.")
-
-       
+    
     elif opcao == "5":
         nome = input("Nome da pizzaria: ").title()
         if nome in estoque:
@@ -95,9 +126,62 @@ while True:
                 aviso =  verificar_estoque(quantidade)
                 print(f"{nome} - {quantidade} folhas {aviso}")
 
-        
-
     elif opcao == "7":
+        while True:
+         
+            print("\n ======== RELATÓRIOS  ========")
+            print("1 - Total de folhas em estoque")
+            print("2 - Total de Cadastros")
+            print("3 - Estoque baixos")
+            print("4 - Histórico de Movimentação")
+            print("5 - Voltar")
+
+            relatorio = input("Escolha uma opção: ")
+
+            if relatorio == "1": 
+                total = sum(estoque.values())
+                print(f"Total de folhas no estoque: {total}")
+
+            elif relatorio == "2":
+                total_cadastros = len(estoque)
+                print(f"Quantidade de Cadastros:  {total_cadastros}")
+
+            elif relatorio == "3":
+                encontrou = False
+                for nome, quantidade in estoque.items():
+                    if quantidade <= 100:
+                        print(f"{nome} -> {quantidade} folhas ⚠️ IMPRIMIR FOLHAS ")
+                        encontrou = True
+                if not encontrou:
+                    print("Nenhum estoque baixo.")
+
+
+            elif relatorio == "4":
+                historico = carregar_historico()
+                if not historico:
+                    print("Nenhuma movimentação registrada.")
+                else:
+                    print("\n ======== HISTÓRICO DE MOVIMENTAÇÕES ========")
+                    for movimentacao in historico:
+
+                        print(
+                            f"{movimentacao['data']} | "
+                            f"{movimentacao['pizzaria']} | "
+                            f"{movimentacao['tipo']} | "
+                             f"{movimentacao['quantidade']} folhas"
+                        )
+                        print("\n --------------------------------------------------------")
+                           
+                        
+
+            elif relatorio == "5":
+                break
+            else:
+                print("Opção inválida!")
+
+
+
+    elif opcao == "8":
         print("Sistema encerrado!")
         break
 
