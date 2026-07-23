@@ -1,33 +1,34 @@
 import json
 from datetime import datetime
 
+# Função para salvar estoque #
 def salvar_estoque(estoque):
     with open("estoque.json", "w") as arquivo:
         json.dump(estoque, arquivo, indent=4)
-
+# Função para carregar o estoque #
 def carregar_estoque():
     try:
         with open("estoque.json", "r") as arquivo:
             return json.load(arquivo)
     except FileNotFoundError:
         return{}
-
+# Função para verificar quantidade de folhas #
 def verificar_estoque(quantidade):
     if quantidade <= 100:
         return "⚠️ IMPRIMIR FOLHAS"
     return ""
-
+# Função para carregar historico de movimentações #
 def carregar_historico():
     try:
         with open("historico.json", "r") as arquivo:
             return json.load(arquivo)
     except FileNotFoundError:
         return []
-
+# Função para salvar o historico #
 def salvar_historico(historico):
     with open("historico.json", "w") as arquivo:
         json.dump(historico, arquivo, indent=4)
-
+# Função para registrar movimentação #
 def registrar_movimentacao(nome, tipo, quantidade):
     historico = carregar_historico()
     data = datetime.now().strftime("%d/%m/%Y %H:%M")
