@@ -1,3 +1,44 @@
 [
-   
+    {
+        "pizzaria": "Enrico P",
+        "tipo": "Sa\u00edda",
+        "quantidade": 450,
+        "data": "22/07/2026 21:15"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Entrada",
+        "quantidade": 500,
+        "data": "27/07/2026 19:43"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Entrada",
+        "quantidade": -10,
+        "data": "27/07/2026 19:50"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Entrada",
+        "quantidade": 0,
+        "data": "27/07/2026 19:50"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Entrada",
+        "quantidade": 200,
+        "data": "27/07/2026 19:50"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Sa\u00edda",
+        "quantidade": 500,
+        "data": "27/07/2026 20:06"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Sa\u00edda",
+        "quantidade": 1000,
+        "data": "27/07/2026 20:06"
+    }
 ]

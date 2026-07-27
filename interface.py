@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import json
+from stockcontrol import *
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -18,7 +19,6 @@ def carregar_estoque():
         
 
 estoque = carregar_estoque()
-
 
 
 # ---------------- JANELA PRINCIPAL ----------------
@@ -117,22 +117,237 @@ def abrir_cadastro():
         command=salvar
     )
     botao_salvar.pack(pady=20)
-
-    
-
-    
+   
 
 def abrir_consulta():
-    print("Tela de consulta")
+    limpar_tela()
+
+    titulo = ctk.CTkLabel(
+        main_frame,
+        text="Consulta de Estoque"
+    )
+    titulo.pack(pady=20)
+
+    busca_entry = ctk.CTkEntry(
+        main_frame,
+        placeholder_text="Digite o nome da pizzaria"
+    )
+    busca_entry.pack(pady=10)
+
+    resultado = ctk.CTkLabel(
+        main_frame,
+        text="",
+        justify="left"
+    )
+    resultado.pack(pady=10)
+
+    def buscar():
+        busca = busca_entry.get().strip().lower()
+
+        resultados = ""
+
+        for nome, quantidade in estoque.items():
+            if busca in nome.lower():
+                resultados += f"{nome} - {quantidade} folhas\n"
+
+        if resultados == "":
+            resultado.configure(
+            text="Nenhuma pizzaria encontrada."
+        )
+        else:
+            resultado.configure(
+            text=resultados
+        )
+    
+    botao_buscar = ctk.CTkButton(
+        main_frame,
+        text="Buscar",
+        command=buscar
+    )
+    botao_buscar.pack(pady=20)
 
 
 def abrir_entrada():
-    print("Tela de entrada de folhas")
+    limpar_tela()
+
+    titulo = ctk.CTkLabel(
+        main_frame,
+        text="Entrada de Folhas"
+    )
+    titulo.pack(pady=20)
+
+    nome_entry = ctk.CTkEntry(
+        main_frame,
+        placeholder_text="Nome da pizzaria"
+    )
+    nome_entry.pack(pady=10)
+
+    quantidade_entry = ctk.CTkEntry(
+        main_frame,
+        placeholder_text="Quantidade de folhas"
+    )
+    quantidade_entry.pack(pady=10)
+
+    mensagem = ctk.CTkLabel(
+        main_frame,
+        text=""
+    )
+    mensagem.pack(pady=10)
+
+    
+
+    def adicionar():
+
+        estoque = carregar_estoque()
+        
+        nome = nome_entry.get().strip().title()
+        quantidade = quantidade_entry.get().strip()
+
+        if nome == "":
+            mensagem.configure(
+                text="Digite o nome da pizzaria"
+            )
+            return
+        if quantidade == "":
+            mensagem.configure(
+                text="Digite a quantidade"
+            )
+            return
+        try:
+            quantidade = int(quantidade)
+        except ValueError:
+            mensagem.configure(
+                text="Digite apenas números."
+            )
+            return
+        
+
+        if nome not in estoque:
+            mensagem.configure(
+                text="Pizzaria não encontrada."
+            )
+            return
+
+        estoque[nome] += quantidade
+
+        salvar_estoque(estoque)
+
+        registrar_movimentacao(
+            nome,
+            "Entrada",
+            quantidade
+        )
+
+        nome_entry.delete(0, "end")
+        quantidade_entry.delete(0, "end")
+
+        mensagem.configure(
+            text="✅ Entrada registrada com sucesso!"
+        )
+
+        mensagem.after(
+            2000,
+            lambda: mensagem.configure(text="")
+        )
+
+
+    botao_entrada = ctk.CTkButton(
+        main_frame,
+        text="Adicionar",
+        command=adicionar
+        )
+    botao_entrada.pack(pady=20)    
+
 
 
 def abrir_saida():
-    print("Tela de saída de folhas")
+    limpar_tela
 
+    titulo = ctk.CTkLabel(
+        main_frame,
+        text="Saída de Folhas"
+    )
+    titulo.pack(pady=20)
+
+    nome_entry = ctk.CTkEntry(
+        main_frame,
+        placeholder_text="Nome da pizzaria"
+    )
+    nome_entry.pack(pady=10)
+
+    quantidade_entry = ctk.CTkEntry(
+        main_frame,
+        placeholder_text="Quantidade de folhas"
+    )
+    quantidade_entry.pack(pady=10)
+
+    mensagem = ctk.CTkLabel(
+        main_frame,
+        text=""
+    )
+    mensagem.pack(pady=10)
+
+    def retirar():
+        estoque = carregar_estoque()
+        nome = nome_entry.get().strip().title()
+        quantidade = quantidade_entry.get().strip()
+        if nome == "":
+            mensagem.configure(
+            text="Digite o nome da pizzaria"
+            )
+            return
+        if quantidade == "":
+            mensagem.configure(
+            text="Digite a quantidade"
+            )
+            return
+        try:
+            quantidade = int(quantidade)
+        except ValueError:
+            mensagem.configure(
+            text="Digite apenas números."
+            )
+            return
+        
+        if nome not in estoque:
+            mensagem.configure(
+                text="Pizzaria não encontrada."
+            )
+            return
+
+        if quantidade > estoque[nome]:
+            mensagem.configure(
+                text="Estoque insuficiente"
+            )
+            return
+
+        estoque[nome] -= quantidade
+
+        salvar_estoque(estoque)
+
+        registrar_movimentacao(
+            nome,
+            "Saída",
+            quantidade
+        )
+        
+        nome_entry.delete(0, "end")
+        quantidade_entry.delete(0, "end")
+
+        mensagem.configure(
+            text="✅ Saída registrada com sucesso!"
+        )
+
+        mensagem.after(
+            2000,
+            lambda: mensagem.configure(text="")
+        )
+    botao_retirada = ctk.CTkButton(
+        main_frame,
+        text="Retirar",
+        command=retirar
+        )
+    botao_retirada.pack(pady=20)   
 
 def abrir_relatorios():
     print("Tela de relatórios")
