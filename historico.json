@@ -40,5 +40,23 @@
         "tipo": "Sa\u00edda",
         "quantidade": 1000,
         "data": "27/07/2026 20:06"
+    },
+    {
+        "pizzaria": "Enrico P",
+        "tipo": "Entrada",
+        "quantidade": 1000,
+        "data": "03/08/2026 19:39"
+    },
+    {
+        "pizzaria": "Enrico Pizza",
+        "tipo": "Entrada",
+        "quantidade": 600,
+        "data": "03/08/2026 19:40"
+    },
+    {
+        "pizzaria": "Paladar",
+        "tipo": "Sa\u00edda",
+        "quantidade": 500,
+        "data": "03/08/2026 20:10"
     }
 ]

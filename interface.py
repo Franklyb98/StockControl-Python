@@ -56,7 +56,6 @@ def limpar_tela():
     for widget in main_frame.winfo_children():
         widget.destroy()
 
-
 def abrir_cadastro():
     limpar_tela()
 
@@ -118,7 +117,6 @@ def abrir_cadastro():
     )
     botao_salvar.pack(pady=20)
    
-
 def abrir_consulta():
     limpar_tela()
 
@@ -166,6 +164,69 @@ def abrir_consulta():
     )
     botao_buscar.pack(pady=20)
 
+def abrir_listar_todas():
+    limpar_tela()
+
+    titulo = ctk.CTkLabel(
+        main_frame,
+        text="📋 Todas as Pizzarias",
+        font=("Arial", 22, "bold")
+    )
+    titulo.pack(pady=20)
+
+    estoque = carregar_estoque()
+
+    lista_frame = ctk.CTkScrollableFrame(
+        main_frame
+    )
+    lista_frame.pack(
+        fill="both",
+        expand=True,
+        padx=20,
+        pady=20
+    )
+
+    if not estoque:
+        ctk.CTkLabel(
+            lista_frame,
+            text="Nenhuma pizzaria cadastrada."
+        ).pack(pady=20)
+        return
+
+    for nome, quantidade in estoque.items():
+        if quantidade <=100:
+            cor = "red"
+        else:
+            cor = "white"
+
+        card = ctk.CTkFrame(lista_frame)
+        card.pack(
+            fill="x",
+            padx=10,
+            pady=5
+        )
+
+        ctk.CTkLabel(
+            card,
+            text=f"🍕 {nome}",
+            text_color=cor,
+            font=("Arial",18, "bold"),
+        ).pack(
+            anchor="w",
+            padx=15,
+            pady=(10,5)
+        )
+
+        ctk.CTkLabel(
+            card,
+            text=f"📦 {quantidade} folhas",
+            text_color=cor,
+            font=("Arial",15)
+        ).pack(
+            anchor="w",
+            padx=15,
+            pady=(0,10)
+        )
 
 def abrir_entrada():
     limpar_tela()
@@ -258,8 +319,6 @@ def abrir_entrada():
         )
     botao_entrada.pack(pady=20)    
 
-
-
 def abrir_saida():
     limpar_tela
 
@@ -350,8 +409,176 @@ def abrir_saida():
     botao_retirada.pack(pady=20)   
 
 def abrir_relatorios():
-    print("Tela de relatórios")
+    limpar_tela()
 
+    titulo = ctk.CTkLabel(
+        main_frame,
+        text="Relatórios",
+        font=("Arial", 22, "bold")
+    )
+    titulo.pack(pady=20)
+
+    relatorio_frame = ctk.CTkFrame(main_frame)
+
+    relatorio_frame.pack(
+        fill = "both",
+        expand = True,
+        padx = 20,
+        pady = 10
+    )
+
+    estoque = carregar_estoque()
+    historico = carregar_historico()
+    print(historico)
+    print(len(historico))
+
+    cards_frame = ctk.CTkFrame(relatorio_frame)
+    cards_frame.pack(
+        fill="x",
+        pady=10
+    )
+
+    card_total = ctk.CTkFrame(cards_frame)
+    card_total.pack(
+        side="left",
+        padx=10,
+        pady=10,
+        expand=True,
+        fill="x"
+    )
+
+    ctk.CTkLabel(
+        card_total,
+        text="📦 Total de folhas:",
+        font=("Arial", 16, "bold")
+    ).pack(pady=(10,5))
+    ctk.CTkLabel(
+        card_total,
+        text=sum(estoque.values()),
+        font=("Arial", 34, "bold")
+    ).pack(pady=(0,10))
+
+    cards_pizzarias = ctk.CTkFrame(cards_frame)
+    cards_pizzarias.pack(
+        side="left",
+        padx=10,
+        pady=10,
+        expand=True,
+        fill="x"
+    )
+
+    ctk.CTkLabel(
+        cards_pizzarias,
+        text="🏪 Total de pizzarias",
+        font=("Arial", 16, "bold")
+    ).pack(pady=(10,5))
+    ctk.CTkLabel(
+        cards_pizzarias,
+        text=len(estoque),
+        font=("Arial",34, "bold")
+    ).pack(pady=(0,10))
+
+    estoque_baixo_frame = ctk.CTkFrame(relatorio_frame)
+    estoque_baixo_frame.pack(
+        fill="x",
+        padx=10,
+        pady=10
+    )
+
+    ctk.CTkLabel(
+        estoque_baixo_frame,
+        text="⚠ Estoques baixos",
+        font=("Arial", 18, "bold")
+    ).pack(pady=10)
+
+    baixo = False
+    for nome, quantidade in estoque.items():
+        if quantidade <=100:
+            baixo = True
+
+            ctk.CTkLabel(
+                estoque_baixo_frame,
+                text=f"{nome} - {quantidade} folhas"
+            ).pack(anchor="w", padx=20)
+
+    if not baixo:
+        ctk.CTkLabel(
+            estoque_baixo_frame,
+            text="Nenhum estoque baixo"
+        ).pack(pady=10)
+
+    historico_frame = ctk.CTkScrollableFrame(
+        relatorio_frame,
+        height=200
+    )
+    historico_frame.pack(
+        fill="both",
+        expand=True,
+        padx=10,
+        pady=10
+    )
+
+    ctk.CTkLabel(
+        historico_frame,
+        text="📜 Últimas movimentações",
+        font=("Arial", 18 ,"bold")
+    ).pack(pady=10)
+
+    ultimas = historico[-10:]
+
+    for movimentacao in reversed(ultimas):
+        card = ctk.CTkFrame(
+            historico_frame
+        )
+        card.pack(
+            fill="x",
+            padx=10,
+            pady=5
+        )
+        if movimentacao["tipo"] == "Entrada":
+            icone = "📥"
+            cor = "white"
+        else:
+            icone = "📥"
+            cor = "red"
+
+        
+
+        ctk.CTkLabel(
+            card,
+            text=f"{icone} {movimentacao['tipo']}",
+            text_color=cor,
+            font=("Arial", 18, "bold")
+        ).pack(
+            anchor="w",
+            padx=15,
+            pady=(10,5)
+        )
+        ctk.CTkLabel(
+            card,
+            text=f"🍕 {movimentacao['pizzaria']}",
+            font=("Arial",16)
+        ).pack(
+            anchor="w",
+            padx=15
+        )
+        ctk.CTkLabel(
+            card,
+            text=f"📦 {movimentacao['quantidade']} folhas",
+            font=("Arial",16)
+        ).pack(
+            anchor="w",
+            padx=15
+        )
+        ctk.CTkLabel(
+            card,
+            text=f"🕒 {movimentacao['data']}",
+            font=("Arial", 14)
+        ).pack(
+            anchor="w",
+            padx=15,
+            pady=(0,10)
+        )
 
 def sair():
     app.destroy()
@@ -377,6 +604,7 @@ titulo.pack(
 botoes = [
     "➕ Cadastrar",
     "🔍 Consultar",
+    "📋 Listar Todas",
     "📥 Entrada",
     "📤 Saída",
     "📊 Relatórios",
@@ -387,6 +615,7 @@ botoes = [
 funcoes = {
     "➕ Cadastrar": abrir_cadastro,
     "🔍 Consultar": abrir_consulta,
+    "📋 Listar Todas": abrir_listar_todas,
     "📥 Entrada": abrir_entrada,
     "📤 Saída": abrir_saida,
     "📊 Relatórios": abrir_relatorios,
